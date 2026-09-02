@@ -16,10 +16,25 @@ export async function request(endpoint, options = {}) {
 
   try {
     const response = await fetch(`${API_BASE_URL}${endpoint}`, config);
-    const data = await response.json();
+    const contentType = response.headers.get('content-type');
+
+    let data;
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      try {
+        data = JSON.parse(text);
+      } catch {
+        data = {
+          success: response.ok,
+          message: text || `Server responded with status ${response.status}`,
+        };
+      }
+    }
 
     if (!response.ok) {
-      const error = new Error(data.message || 'An error occurred with your request.');
+      const error = new Error(data.message || `Request failed with status ${response.status}`);
       error.status = response.status;
       error.data = data;
       throw error;
