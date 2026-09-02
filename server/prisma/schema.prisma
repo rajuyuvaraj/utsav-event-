@@ -1,0 +1,83 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AdminUser {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   @default("ADMIN")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model EventCategory {
+  id           String   @id @default(uuid())
+  name         String
+  slug         String   @unique
+  description  String
+  coverImage   String
+  icon         String   @default("sparkles")
+  displayOrder Int      @default(0)
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  themes       Theme[]
+}
+
+model Theme {
+  id           String        @id @default(uuid())
+  categoryId   String
+  category     EventCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String        @unique
+  description  String
+  shortDesc    String?
+  features     String        @default("[]") // JSON string array of features/inclusions
+  images       String        @default("[]") // JSON string array of image URLs
+  isPopular    Boolean       @default(false)
+  displayOrder Int           @default(0)
+  active       Boolean       @default(true)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model AddonItem {
+  id           String   @id @default(uuid())
+  name         String
+  description  String
+  image        String
+  itemCategory String   @default("Floral") // Floral, Lighting, Seating, Entry, FX, Signage, Sound
+  unitType     String   @default("Set") // Set, Pair, Piece, Running Foot, Hours
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Request {
+  id                String   @id @default(uuid())
+  requestNumber     String   @unique // e.g. UTSAV-2026-1042
+  customerName      String
+  phone             String
+  email             String
+  eventDate         String   // YYYY-MM-DD
+  eventTimeSlot     String   @default("Evening") // Morning, Afternoon, Evening, Full Day
+  location          String   // City / Venue address
+  venueType         String   @default("Banquet Hall") // Banquet Hall, Home/Apartment, Lawn, Hotel, Temple
+  guestCount        Int?     // Approximate count
+  notes             String?  // Special requests / preferences
+  selectedThemeId   String?  // ID of selected theme
+  selectedThemeName String?  // Name snapshot of selected theme
+  selectedAddons    String   @default("[]") // JSON array of selected add-on items with quantities
+  status            String   @default("NEW") // NEW, CONTACTED, CONFIRMED, CLOSED
+  adminNotes        String   @default("[]") // JSON array of notes { text, date, author }
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
