@@ -1,11 +1,12 @@
 /* ==========================================================================
-   ADMIN PORTAL STYLING
+   ADMIN PORTAL STYLING (MOBILE-FIRST & RESPONSIVE)
    ========================================================================== */
 
 .admin-layout {
   display: flex;
   min-height: 100vh;
   background-color: #F8F5F0;
+  position: relative;
 }
 
 /* Sidebar */
@@ -17,10 +18,30 @@
   flex-direction: column;
   flex-shrink: 0;
   border-right: 1px solid rgba(212, 175, 55, 0.2);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1050;
+}
+
+.admin-sidebar-close-btn {
+  display: none;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  cursor: pointer;
+  padding: 4px;
+}
+
+.admin-sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 5, 10, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1040;
 }
 
 .admin-brand {
-  padding: 1.8rem 1.5rem;
+  padding: 1.5rem 1.25rem;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -29,7 +50,7 @@
 
 .admin-brand .admin-brand-title {
   font-family: var(--font-display);
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 700;
   color: #FFFFFF;
 }
@@ -57,11 +78,12 @@
   display: flex;
   align-items: center;
   gap: 0.85rem;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   color: #E2D7D9;
   font-weight: 600;
   font-size: 0.92rem;
+  text-decoration: none;
   transition: all var(--transition-fast);
 }
 
@@ -77,7 +99,7 @@
 }
 
 .sidebar-footer {
-  padding: 1.5rem;
+  padding: 1.25rem;
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 
@@ -85,12 +107,12 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
 }
 
 .admin-avatar {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   background: var(--gold-gradient);
   color: var(--maroon-deep);
   border-radius: 50%;
@@ -99,6 +121,7 @@
   justify-content: center;
   font-weight: 700;
   font-family: var(--font-heading);
+  flex-shrink: 0;
 }
 
 /* Admin Main Content */
@@ -110,61 +133,72 @@
 }
 
 .admin-header {
-  height: 70px;
+  height: 68px;
   background: #FFFFFF;
   border-bottom: 1px solid var(--surface-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 2rem;
+  padding: 0 clamp(1rem, 2vw, 2rem);
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
+.admin-menu-toggle {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--maroon-deep);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+}
+
 .admin-header-title {
   font-family: var(--font-heading);
-  font-size: 1.35rem;
+  font-size: clamp(1.1rem, 2vw, 1.35rem);
   color: var(--maroon-deep);
 }
 
 .admin-header-actions {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 0.85rem;
 }
 
 .admin-content-body {
-  padding: 2rem;
+  padding: clamp(1rem, 2.5vw, 2rem);
   flex-grow: 1;
 }
 
 /* KPI Cards Grid */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
   margin-bottom: 2rem;
 }
 
 .kpi-card {
   background: #FFFFFF;
   border-radius: var(--radius-lg);
-  padding: 1.5rem;
+  padding: 1.35rem;
   border: 1px solid var(--surface-border);
   box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  gap: 1.1rem;
 }
 
 .kpi-icon-wrap {
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   border-radius: var(--radius-md);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .kpi-icon-wrap.maroon {
@@ -189,14 +223,14 @@
 
 .kpi-val {
   font-family: var(--font-heading);
-  font-size: 1.8rem;
+  font-size: 1.65rem;
   font-weight: 800;
   color: var(--text-heading);
   line-height: 1.1;
 }
 
 .kpi-label {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-muted);
   text-transform: uppercase;
@@ -209,7 +243,7 @@
   border-radius: var(--radius-lg);
   border: 1px solid var(--surface-border);
   box-shadow: var(--shadow-sm);
-  padding: 1.8rem;
+  padding: clamp(1.2rem, 2.5vw, 1.8rem);
   margin-bottom: 2rem;
 }
 
@@ -217,7 +251,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
   gap: 1rem;
   flex-wrap: wrap;
 }
@@ -225,30 +259,32 @@
 .admin-table-wrap {
   width: 100%;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  min-width: 600px;
 }
 
 .admin-table th {
   background: var(--bg-secondary);
   color: var(--text-heading);
   font-family: var(--font-heading);
-  font-size: 0.82rem;
+  font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  padding: 0.9rem 1rem;
+  padding: 0.85rem 0.95rem;
   border-bottom: 1px solid var(--surface-border);
   font-weight: 700;
 }
 
 .admin-table td {
-  padding: 1rem;
+  padding: 0.95rem;
   border-bottom: 1px solid var(--surface-border-subtle);
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--text-main);
   vertical-align: middle;
 }
@@ -262,12 +298,13 @@
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.25rem 0.7rem;
   border-radius: var(--radius-full);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.04em;
+  white-space: nowrap;
 }
 
 .status-pill.status-NEW {
@@ -309,17 +346,21 @@
   padding: 0.3rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 100%;
 }
 
 .filter-tab {
-  padding: 0.45rem 1rem;
+  padding: 0.4rem 0.85rem;
   border-radius: var(--radius-sm);
   background: none;
   border: none;
   font-weight: 600;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   color: var(--text-muted);
   cursor: pointer;
+  white-space: nowrap;
   transition: all var(--transition-fast);
 }
 
@@ -332,7 +373,7 @@
 .search-input-wrap {
   position: relative;
   flex-grow: 1;
-  max-width: 320px;
+  min-width: 240px;
 }
 
 .search-input-wrap svg {
@@ -347,18 +388,18 @@
   padding-left: 2.4rem;
 }
 
-/* Request Detail Modal */
+/* Request Detail Modal / Dossier */
 .request-detail-grid {
   display: grid;
   grid-template-columns: 1.3fr 1fr;
-  gap: 2rem;
+  gap: clamp(1.5rem, 3vw, 2rem);
 }
 
 .detail-section-title {
   font-family: var(--font-heading);
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--maroon-deep);
-  margin-bottom: 1rem;
+  margin-bottom: 0.9rem;
   padding-bottom: 0.4rem;
   border-bottom: 1px solid var(--surface-border);
 }
@@ -367,11 +408,11 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .info-kv-item .info-label {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   font-weight: 700;
   color: var(--text-subtle);
   text-transform: uppercase;
@@ -379,7 +420,7 @@
 }
 
 .info-kv-item .info-value {
-  font-size: 0.95rem;
+  font-size: 0.92rem;
   font-weight: 600;
   color: var(--text-heading);
 }
@@ -387,28 +428,28 @@
 .admin-notes-log {
   background: var(--bg-secondary);
   border-radius: var(--radius-md);
-  padding: 1.2rem;
-  max-height: 260px;
+  padding: 1rem;
+  max-height: 240px;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.75rem;
 }
 
 .note-bubble {
   background: #FFFFFF;
-  padding: 0.8rem 1rem;
+  padding: 0.75rem 0.9rem;
   border-radius: var(--radius-md);
   border: 1px solid var(--surface-border);
-  font-size: 0.88rem;
+  font-size: 0.85rem;
 }
 
 .note-bubble-meta {
   display: flex;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--text-subtle);
-  margin-bottom: 0.35rem;
+  margin-bottom: 0.3rem;
   font-weight: 600;
 }
 
@@ -417,19 +458,22 @@
   display: flex;
   gap: 0.5rem;
   border-bottom: 2px solid var(--surface-border);
-  margin-bottom: 2rem;
+  margin-bottom: 1.8rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .catalog-tab-btn {
-  padding: 0.8rem 1.6rem;
+  padding: 0.75rem 1.4rem;
   background: none;
   border: none;
   font-family: var(--font-heading);
-  font-size: 1.05rem;
+  font-size: 0.95rem;
   font-weight: 700;
   color: var(--text-muted);
   cursor: pointer;
   position: relative;
+  white-space: nowrap;
   transition: color var(--transition-fast);
 }
 
@@ -446,4 +490,48 @@
   height: 3px;
   background: var(--marigold);
   border-radius: 3px 3px 0 0;
+}
+
+/* ==========================================================================
+   ADMIN RESPONSIVE BREAKPOINTS
+   ========================================================================== */
+
+@media (max-width: 992px) {
+  .admin-sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    transform: translateX(-100%);
+  }
+
+  .admin-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .admin-sidebar-close-btn {
+    display: flex;
+  }
+
+  .admin-sidebar-backdrop {
+    display: block;
+  }
+
+  .admin-menu-toggle {
+    display: flex;
+  }
+
+  .request-detail-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .info-kv-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-live-link span {
+    display: none;
+  }
 }

@@ -1,14 +1,33 @@
-import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { useCustomization } from '../../context/CustomizationContext';
 import { DiyaIcon } from './Motif';
-import { Sparkles, ShoppingBag, Menu, X, Shield, Phone, ChevronDown } from 'lucide-react';
+import { Sparkles, ShoppingBag, Menu, X, Shield, Phone, ChevronDown, ChevronRight, MessageSquare } from 'lucide-react';
 
 export const Navbar = () => {
   const { selectedTheme, selectedAddons, totalAddonsCount } = useCustomization();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesDropdown, setCategoriesDropdown] = useState(false);
+  const [mobileCategoriesOpen, setMobileCategoriesOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  // Close mobile menu on route change
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [mobileMenuOpen]);
 
   const categories = [
     { name: 'Royal Weddings', slug: 'weddings' },
@@ -26,7 +45,7 @@ export const Navbar = () => {
       <div className="container">
         <div className="navbar-inner">
           {/* Logo */}
-          <Link to="/" className="brand-logo" onClick={() => setMobileMenuOpen(false)}>
+          <Link to="/" className="brand-logo">
             <div className="logo-icon">
               <DiyaIcon size={22} color="#4A0E17" />
             </div>
@@ -37,7 +56,7 @@ export const Navbar = () => {
           </Link>
 
           {/* Desktop Nav Links */}
-          <nav>
+          <nav className="desktop-nav">
             <ul className="nav-links">
               <li className="nav-item">
                 <NavLink to="/" end className={({ isActive }) => (isActive ? 'active' : '')}>
@@ -47,60 +66,22 @@ export const Navbar = () => {
 
               {/* Categories Dropdown */}
               <li
-                className="nav-item"
-                style={{ position: 'relative' }}
+                className="nav-item has-dropdown"
                 onMouseEnter={() => setCategoriesDropdown(true)}
                 onMouseLeave={() => setCategoriesDropdown(false)}
               >
-                <span
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    cursor: 'pointer',
-                    fontWeight: 600,
-                    color: 'var(--text-heading)',
-                    padding: '0.5rem 0',
-                  }}
-                >
+                <span className="dropdown-trigger">
                   Events & Occasions <ChevronDown size={15} />
                 </span>
 
                 {categoriesDropdown && (
-                  <div
-                    style={{
-                      position: 'absolute',
-                      top: '100%',
-                      left: 0,
-                      width: '260px',
-                      background: '#FFFFFF',
-                      borderRadius: 'var(--radius-md)',
-                      boxShadow: 'var(--shadow-lg)',
-                      border: '1px solid var(--surface-border)',
-                      padding: '0.6rem 0',
-                      zIndex: 100,
-                    }}
-                  >
+                  <div className="dropdown-menu animate-fade-in">
                     {categories.map((cat) => (
                       <Link
                         key={cat.slug}
                         to={`/category/${cat.slug}`}
+                        className="dropdown-item"
                         onClick={() => setCategoriesDropdown(false)}
-                        style={{
-                          display: 'block',
-                          padding: '0.6rem 1.2rem',
-                          fontSize: '0.9rem',
-                          color: 'var(--text-heading)',
-                          fontWeight: 500,
-                        }}
-                        onMouseEnter={(e) => {
-                          e.currentTarget.style.background = 'var(--bg-secondary)';
-                          e.currentTarget.style.color = 'var(--marigold)';
-                        }}
-                        onMouseLeave={(e) => {
-                          e.currentTarget.style.background = 'transparent';
-                          e.currentTarget.style.color = 'var(--text-heading)';
-                        }}
                       >
                         {cat.name}
                       </Link>
@@ -132,7 +113,7 @@ export const Navbar = () => {
               title="View your customized request"
             >
               <Sparkles size={16} />
-              <span>Your Request</span>
+              <span className="cart-label">Your Request</span>
               {hasSelections && (
                 <span className="cart-counter">
                   {(selectedTheme ? 1 : 0) + totalAddonsCount}
@@ -140,16 +121,16 @@ export const Navbar = () => {
               )}
             </button>
 
-            {/* Quick Plan CTA */}
-            <Link to="/category/weddings" className="btn btn-primary btn-sm" style={{ display: 'none', smDisplay: 'inline-flex' }}>
+            {/* Desktop Quick CTA */}
+            <Link to="/category/weddings" className="btn btn-primary btn-sm desktop-only-btn">
               Explore Themes
             </Link>
 
-            {/* Mobile Menu Button */}
+            {/* Mobile Menu Hamburger Button */}
             <button
               className="mobile-menu-toggle"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              aria-label="Toggle Navigation Menu"
+              aria-label={mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
             >
               {mobileMenuOpen ? <X size={26} /> : <Menu size={26} />}
             </button>
@@ -157,59 +138,105 @@ export const Navbar = () => {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile Drawer Overlay */}
       {mobileMenuOpen && (
-        <div
-          style={{
-            background: 'var(--bg-card)',
-            borderTop: '1px solid var(--surface-border)',
-            padding: '1.5rem',
-            boxShadow: 'var(--shadow-lg)',
-          }}
-        >
-          <ul style={{ listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <li>
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--maroon-deep)' }}>
-                Home
-              </Link>
-            </li>
-            <li style={{ paddingBottom: '0.5rem', borderBottom: '1px solid var(--surface-border-subtle)' }}>
-              <div style={{ fontWeight: 700, fontSize: '0.85rem', textTransform: 'uppercase', color: 'var(--marigold)', marginBottom: '0.5rem' }}>
-                Event Categories
+        <div className="mobile-drawer-overlay" onClick={() => setMobileMenuOpen(false)}>
+          <div className="mobile-drawer" onClick={(e) => e.stopPropagation()}>
+            <div className="mobile-drawer-header">
+              <div className="brand-logo" style={{ fontSize: '1.25rem' }}>
+                <div className="logo-icon" style={{ width: '32px', height: '32px' }}>
+                  <DiyaIcon size={18} color="#4A0E17" />
+                </div>
+                <div>
+                  <span className="brand-title">UTSAV DECOR</span>
+                  <span className="brand-subtitle">Indian Event Aesthetics</span>
+                </div>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.5rem', paddingLeft: '0.5rem' }}>
-                {categories.map((cat) => (
-                  <Link
-                    key={cat.slug}
-                    to={`/category/${cat.slug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    style={{ fontSize: '0.92rem', color: 'var(--text-heading)' }}
-                  >
-                    • {cat.name}
-                  </Link>
-                ))}
-              </div>
-            </li>
-            <li>
-              <Link to="/about" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
-                About Utsav Decor
-              </Link>
-            </li>
-            <li>
-              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} style={{ fontWeight: 600, color: 'var(--text-heading)' }}>
-                Contact & Consultation
-              </Link>
-            </li>
-            <li style={{ paddingTop: '0.5rem', borderTop: '1px solid var(--surface-border-subtle)' }}>
-              <Link
-                to="/admin/login"
+              <button
+                className="mobile-drawer-close"
                 onClick={() => setMobileMenuOpen(false)}
-                style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem', color: 'var(--text-muted)' }}
+                aria-label="Close Navigation Menu"
               >
-                <Shield size={14} /> Admin Access
-              </Link>
-            </li>
-          </ul>
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="mobile-drawer-body">
+              <ul className="mobile-nav-list">
+                <li>
+                  <NavLink to="/" end className="mobile-nav-link">
+                    Home
+                  </NavLink>
+                </li>
+
+                <li>
+                  <button
+                    className="mobile-nav-link mobile-accordion-btn"
+                    onClick={() => setMobileCategoriesOpen(!mobileCategoriesOpen)}
+                  >
+                    <span>Events & Celebrations</span>
+                    <ChevronDown
+                      size={18}
+                      style={{
+                        transform: mobileCategoriesOpen ? 'rotate(180deg)' : 'rotate(0)',
+                        transition: 'transform 0.25s ease',
+                      }}
+                    />
+                  </button>
+
+                  {mobileCategoriesOpen && (
+                    <div className="mobile-subcategories">
+                      {categories.map((cat) => (
+                        <Link
+                          key={cat.slug}
+                          to={`/category/${cat.slug}`}
+                          className="mobile-sub-link"
+                        >
+                          <ChevronRight size={14} color="var(--marigold)" />
+                          <span>{cat.name}</span>
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </li>
+
+                <li>
+                  <NavLink to="/about" className="mobile-nav-link">
+                    About Our Artisans
+                  </NavLink>
+                </li>
+
+                <li>
+                  <NavLink to="/contact" className="mobile-nav-link">
+                    Contact & Studio
+                  </NavLink>
+                </li>
+              </ul>
+
+              <div className="mobile-drawer-footer">
+                <Link to="/request" className="btn btn-gold btn-lg" style={{ width: '100%', marginBottom: '0.8rem' }}>
+                  <Sparkles size={18} /> View Custom Request {hasSelections && `(${(selectedTheme ? 1 : 0) + totalAddonsCount})`}
+                </Link>
+
+                <a
+                  href="https://wa.me/919820145872?text=Hello%20Utsav%20Decor!%20I%20would%20like%20to%20inquire%20about%20event%20decoration."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-secondary btn-md"
+                  style={{ width: '100%', marginBottom: '1.2rem', justifyContent: 'center' }}
+                >
+                  <MessageSquare size={16} color="var(--emerald-accent)" /> WhatsApp Stylist
+                </a>
+
+                <Link
+                  to="/admin/login"
+                  className="mobile-admin-link"
+                >
+                  <Shield size={14} /> Admin Management Portal
+                </Link>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </header>

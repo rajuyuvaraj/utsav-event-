@@ -1,12 +1,17 @@
-import React from 'react';
-import { NavLink, Link, useNavigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { NavLink, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { DiyaIcon } from '../common/Motif';
-import { LayoutDashboard, Inbox, Sparkles, ExternalLink, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Inbox, Sparkles, ExternalLink, LogOut, X } from 'lucide-react';
 
-export const AdminSidebar = () => {
+export const AdminSidebar = ({ mobileOpen = false, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (onClose) onClose();
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -14,7 +19,7 @@ export const AdminSidebar = () => {
   };
 
   return (
-    <aside className="admin-sidebar">
+    <aside className={`admin-sidebar ${mobileOpen ? 'mobile-open' : ''}`}>
       {/* Brand Header */}
       <div className="admin-brand">
         <div
@@ -26,12 +31,24 @@ export const AdminSidebar = () => {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
+            flexShrink: 0,
           }}
         >
           <DiyaIcon size={18} color="#4A0E17" />
         </div>
-        <div className="admin-brand-title">UTSAV DECOR</div>
+        <div className="admin-brand-title" style={{ flexGrow: 1 }}>UTSAV DECOR</div>
         <span className="admin-badge">ADMIN</span>
+
+        {/* Mobile Close Button */}
+        {onClose && (
+          <button
+            onClick={onClose}
+            className="admin-sidebar-close-btn"
+            aria-label="Close Sidebar"
+          >
+            <X size={20} />
+          </button>
+        )}
       </div>
 
       {/* Navigation Links */}
